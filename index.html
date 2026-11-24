@@ -1,0 +1,389 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Control de Turnos</title>
+
+  <!-- Librería para generar códigos QR -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #102b4e, #176b87);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      width: 100%;
+      max-width: 480px;
+      padding: 35px;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+      text-align: center;
+    }
+
+    h1 {
+      color: #12395c;
+      margin-bottom: 10px;
+      font-size: 25px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+
+    .logo {
+      font-size: 45px;
+      margin-bottom: 15px;
+    }
+
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin: 15px 0 6px;
+      color: #333;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: #176b87;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #176b87;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 22px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #104e69;
+    }
+
+    .secondary {
+      background: #64748b;
+    }
+
+    .secondary:hover {
+      background: #475569;
+    }
+
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      margin: 25px auto;
+      min-height: 180px;
+    }
+
+    .info {
+      background: #f0f5f8;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 15px;
+      text-align: left;
+      line-height: 1.8;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .turno {
+      font-size: 65px;
+      font-weight: bold;
+      color: #176b87;
+      margin: 25px 0;
+      letter-spacing: 3px;
+    }
+
+    .success {
+      color: #16834a;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+
+    .note {
+      color: #777;
+      font-size: 12px;
+      margin-top: 15px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="logo">🎓</div>
+    <h1>Sistema de Control de Turnos</h1>
+    <p class="subtitle">Bienvenido. Regístrate para obtener tu turno.</p>
+
+    <!-- PASO 1: REGISTRO -->
+    <section id="paso1" class="step active">
+
+      <h3>Registro de alumno</h3>
+
+      <form id="registroForm">
+
+        <label for="nombre">Nombre completo</label>
+        <input
+          type="text"
+          id="nombre"
+          placeholder="Ingresa tu nombre completo"
+          required
+        >
+
+        <label for="matricula">Matrícula</label>
+        <input
+          type="text"
+          id="matricula"
+          placeholder="Ingresa tu matrícula"
+          required
+        >
+
+        <label for="correo">Correo institucional</label>
+        <input
+          type="email"
+          id="correo"
+          placeholder="ejemplo@institucion.edu.mx"
+          required
+        >
+
+        <label for="division">División académica</label>
+        <select id="division" required>
+          <option value="">Selecciona tu división</option>
+          <option value="Telemática">Telemática</option>
+          <option value="Comercialización">Comercialización</option>
+          <option value="Procesos">Procesos</option>
+          <option value="Informática">Informática</option>
+          <option value="Administración">Administración</option>
+          <option value="Tecnología Ambiental">Tecnología Ambiental</option>
+        </select>
+
+        <button type="submit">Continuar</button>
+
+      </form>
+    </section>
+
+    <!-- PASO 2: CÓDIGO QR -->
+    <section id="paso2" class="step">
+
+      <h3>Tu código QR</h3>
+
+      <p class="subtitle">
+        Presenta este código para identificar tu registro.
+      </p>
+
+      <div id="qrcode"></div>
+
+      <div class="info">
+        <p><strong>Alumno:</strong> <span id="qrNombre"></span></p>
+        <p><strong>Matrícula:</strong> <span id="qrMatricula"></span></p>
+        <p><strong>División:</strong> <span id="qrDivision"></span></p>
+      </div>
+
+      <button type="button" id="confirmarEscaneo">
+        Ya está escaneado
+      </button>
+
+      <p class="note">
+        Esta opción simula el escaneo del código QR mientras
+        se implementa el lector físico.
+      </p>
+
+    </section>
+
+    <!-- PASO 3: TURNO ASIGNADO -->
+    <section id="paso3" class="step">
+
+      <h3>¡Tu turno ha sido asignado!</h3>
+
+      <p class="subtitle">
+        Conserva este número y espera a ser llamado.
+      </p>
+
+      <div class="turno" id="numeroTurno">A-001</div>
+
+      <div class="info">
+        <p><strong>Alumno:</strong> <span id="turnoNombre"></span></p>
+        <p><strong>Matrícula:</strong> <span id="turnoMatricula"></span></p>
+        <p><strong>División:</strong> <span id="turnoDivision"></span></p>
+      </div>
+
+      <p class="success">Registro completado correctamente.</p>
+
+      <button type="button" id="nuevoRegistro" class="secondary">
+        Finalizar
+      </button>
+
+    </section>
+
+  </div>
+
+  <script>
+
+    // Mostrar una pantalla y ocultar las demás
+    function mostrarPaso(numero) {
+      document.querySelectorAll(".step").forEach(paso => {
+        paso.classList.remove("active");
+      });
+
+      document.getElementById("paso" + numero)
+        .classList.add("active");
+    }
+
+    // Datos del alumno
+    let alumno = {};
+
+    // Contadores de turnos por división
+    const letrasDivisiones = {
+      "Telemática": "T",
+      "Comercialización": "C",
+      "Procesos": "P",
+      "Informática": "I",
+      "Administración": "A",
+      "Tecnología Ambiental": "M"
+    };
+
+    // PASO 1: REGISTRO
+    document.getElementById("registroForm")
+      .addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        alumno = {
+          nombre: document.getElementById("nombre").value.trim(),
+          matricula: document.getElementById("matricula").value.trim(),
+          correo: document.getElementById("correo").value.trim(),
+          division: document.getElementById("division").value
+        };
+
+        if (!alumno.nombre || !alumno.matricula ||
+            !alumno.correo || !alumno.division) {
+          alert("Completa todos los campos.");
+          return;
+        }
+
+        // Mostrar datos del QR
+        document.getElementById("qrNombre").textContent =
+          alumno.nombre;
+
+        document.getElementById("qrMatricula").textContent =
+          alumno.matricula;
+
+        document.getElementById("qrDivision").textContent =
+          alumno.division;
+
+        // Limpiar QR anterior
+        document.getElementById("qrcode").innerHTML = "";
+
+        // Generar QR
+        const datosQR = JSON.stringify(alumno);
+
+        new QRCode(document.getElementById("qrcode"), {
+          text: datosQR,
+          width: 180,
+          height: 180,
+          correctLevel: QRCode.CorrectLevel.H
+        });
+
+        mostrarPaso(2);
+      });
+
+    // PASO 2: SIMULAR ESCANEO Y ASIGNAR TURNO
+    document.getElementById("confirmarEscaneo")
+      .addEventListener("click", function() {
+
+        const letra = letrasDivisiones[alumno.division];
+
+        // Obtener contador guardado para esa división
+        const clave = "turno_" + letra;
+        let contador = parseInt(localStorage.getItem(clave) || "0");
+
+        contador++;
+
+        // Guardar nuevo contador
+        localStorage.setItem(clave, contador);
+
+        // Crear turno con letra y tres números
+        const numero = String(contador).padStart(3, "0");
+        const turno = letra + "-" + numero;
+
+        // Mostrar información del turno
+        document.getElementById("numeroTurno").textContent = turno;
+
+        document.getElementById("turnoNombre").textContent =
+          alumno.nombre;
+
+        document.getElementById("turnoMatricula").textContent =
+          alumno.matricula;
+
+        document.getElementById("turnoDivision").textContent =
+          alumno.division;
+
+        mostrarPaso(3);
+      });
+
+    // PASO 3: FINALIZAR
+    document.getElementById("nuevoRegistro")
+      .addEventListener("click", function() {
+
+        document.getElementById("registroForm").reset();
+
+        document.getElementById("qrcode").innerHTML = "";
+
+        alumno = {};
+
+        mostrarPaso(1);
+      });
+
+  </script>
+
+</body>
+</html>
